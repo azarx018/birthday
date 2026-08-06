@@ -7,8 +7,18 @@
   position: relative;
   width: 160px;
   height: 140px;
+  scale: 1;
   animation: gift-idle-shake 4s ease-in-out infinite;
-  transition: opacity var(--duration-slow) var(--ease-in-out-soft);
+  transition:
+    opacity var(--duration-slow) var(--ease-in-out-soft),
+    scale var(--duration-fast) var(--ease-out-soft);
+}
+
+/* Feedback sentuh saat kotak ditekan — `scale` dipakai (bukan `transform`)
+   karena `transform: rotate()` sudah dipakai animasi gift-idle-shake di
+   elemen yang sama; scale aman berjalan berbarengan tanpa bentrok. */
+.gift-box:active {
+  scale: 0.97;
 }
 
 .gift-box.is-hidden {
@@ -22,8 +32,8 @@
   width: 100%;
   height: 72%;
   background: linear-gradient(160deg, var(--color-accent-primary) 0%, var(--color-accent-primary-soft) 100%);
-  border-radius: 12px;
-  box-shadow: 0 12px 24px rgba(43, 22, 32, 0.35);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
 }
 
 .gift-box__ribbon-v {

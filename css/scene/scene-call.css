@@ -61,6 +61,7 @@
   border-radius: 50%;
   color: #fff;
   font-size: var(--font-size-lg);
+  box-shadow: var(--shadow-md);
   transition: transform var(--duration-fast) var(--ease-out-soft);
 }
 
@@ -103,8 +104,8 @@
   max-width: 320px;
   padding: var(--space-sm) var(--space-md);
   background-color: #fff;
-  border-radius: 14px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
   opacity: 0;
   pointer-events: none;
   transform: translate(-50%, -20px);

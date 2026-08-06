@@ -1,5 +1,9 @@
 .scene-birthday {
-  background: linear-gradient(160deg, var(--color-bg-light) 0%, var(--color-bg-light-soft) 100%);
+  /* Radial glow lembut di belakang konten + gradient dasar existing —
+     identitas "soft pink glow" sesuai brief Scene Backgrounds. */
+  background:
+    radial-gradient(circle at 50% 35%, rgba(232, 130, 159, 0.22) 0%, transparent 60%),
+    linear-gradient(160deg, var(--color-bg-light) 0%, var(--color-bg-light-soft) 100%);
   overflow: hidden;
 }
 
@@ -37,18 +41,19 @@
   margin-top: var(--space-lg);
   min-height: 48px;
   padding: 0 var(--space-xl);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background-color: var(--color-accent-primary);
   color: var(--color-bg-light);
   font-family: var(--font-display);
   font-size: var(--font-size-base);
   font-weight: 600;
-  box-shadow: 0 8px 20px rgba(232, 130, 159, 0.35);
-  transition: transform var(--duration-fast) var(--ease-out-soft);
+  box-shadow: var(--shadow-glow-primary);
+  scale: 1;
+  transition: scale var(--duration-fast) var(--ease-out-soft);
 }
 
 .scene-birthday__button:active {
-  transform: scale(0.96);
+  scale: 0.96;
 }
 
 /* Balon: dibuat dinamis lewat js/effects/balloons.js */

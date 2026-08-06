@@ -33,14 +33,14 @@
 
 .quiz-option {
   padding: var(--space-sm) var(--space-md);
-  border-radius: 14px;
+  border-radius: var(--radius-sm);
   background-color: #fff;
   color: var(--color-text-on-light);
   font-family: var(--font-base);
   font-size: var(--font-size-base);
   text-align: left;
   border: 2px solid transparent;
-  box-shadow: 0 6px 14px rgba(43, 22, 32, 0.1);
+  box-shadow: var(--shadow-sm);
   transition:
     border-color var(--duration-fast) var(--ease-out-soft),
     transform var(--duration-fast) var(--ease-out-soft);

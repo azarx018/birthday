@@ -130,5 +130,106 @@ approval user di tiap bagian sebelum lanjut.
 
 ---
 
+## Polish 2 — Birthday + Gift + Memory ✅
+
+**Bug ditemukan & diperbaiki dulu (regresi dari Polish 1 Foundation):**
+`css/scene/scene-memory.css` punya override khusus
+`.memory-slide--gallery.is-visible .cta-button--fade` (tombol "Lanjut" di
+galeri dipicu visible lewat class INDUK, bukan class `.is-visible` di
+tombol itu sendiri — pola beda dari scene lain). Override ini masih pakai
+`transform: translateY(0)` lama, padahal sejak Foundation base class
+`.cta-button`/`.cta-button--fade` sudah pindah ke `translate`. Sudah
+diperbaiki. **Pelajaran:** kalau nanti ada scene lain dengan pola serupa
+(override visibility cta-button lewat parent selector), cek juga.
+
+**File yang berubah:**
+
+- `css/scene/scene-birthday.css`
+  - Background dapat radial glow pink tipis di belakang konten (identitas
+    "soft pink glow" sesuai brief Scene Backgrounds), gradient dasar tetap.
+  - `.scene-birthday__button` — radius & shadow ditokenisasi
+    (`--radius-pill`, `--shadow-glow-primary`), feedback tekan pindah dari
+    `transform: scale()` ke properti `scale` (konsisten dengan pola
+    Foundation), TIDAK digabung ke class `.cta-button` (instruksi brief:
+    "Do not refactor unrelated code" — cukup tokenisasi, bukan merge).
+- `css/scene/scene-gift.css`
+  - `.gift-box__body` radius & shadow ditokenisasi (`--radius-sm`, `--shadow-lg`)
+  - **Baru:** kotak hadiah sekarang punya feedback tekan (`:active { scale: 0.97 }`)
+    — sebelumnya kotak ini interaktif (role="button", ada `onclick`/`onkeydown`
+    di JS) tapi TIDAK ada feedback sentuh sama sekali. Pakai `scale` (bukan
+    `transform`) karena `gift-idle-shake` (animasi goyang idle) sudah
+    menguasai `transform: rotate()` di elemen yang sama — pola yang sama
+    seperti `.cta-button` di Foundation.
+- `css/scene/scene-memory.css`
+  - Background pindah dari `--color-bg-light-soft` (pink) ke
+    **`--color-bg-cream`** — identitas sendiri sesuai brief Scene Backgrounds
+    ("Memory: warm cream"), beda dari scene terang lain yang masih pink.
+    Kontras teks tetap aman (keduanya background terang, teks tetap dark plum).
+  - `.memory-photo-frame` (polaroid) — radius naik ke `--radius-sm` (dari 4px),
+    shadow ke `--shadow-lg`, padding pakai token spacing. `transform`
+    (translateX + rotate digabung) DIPECAH jadi `translate` + `rotate`
+    terpisah (properti modern CSS) — lebih jelas dibaca, dan pola ini
+    konsisten dipakai di seluruh project pasca-Foundation.
+  - `.memory-gallery-item` — radius naik ke `--radius-sm` (dari 6px), shadow
+    ditokenisasi (`--shadow-md`), gap grid naik ke `--space-md` (dari
+    `--space-sm`) biar antar foto tidak terlalu rapat.
+  - **Sengaja TIDAK** menambah feedback tekan (`:active` scale) di foto
+    polaroid maupun item galeri — elemen-elemen ini pasif (dilihat/discroll,
+    bukan ditekan untuk aksi), swipe horizontal jadi interaksi utamanya.
+    Nambah scale-on-touch di situ berisiko terasa "berkedip" tiap kali jari
+    mulai swipe, bukan feedback yang berguna.
+
+**Catatan untuk lanjutan:** pola "pisahkan `transform` jadi `translate` +
+`rotate` + `scale` terpisah" ini sekarang standar di seluruh project kalau
+suatu elemen butuh lebih dari satu jenis transform yang dianimasikan
+independen (lihat juga Preloader). Ikuti pola ini di scene berikutnya,
+jangan gabung balik jadi satu `transform` shorthand.
+
+---
+
+## Polish 3 — Stars + Quiz + Video + Call + Talking Photo ✅
+
+Scope chunk ini lebih ringan dibanding Polish 2 — kelima scene ini sudah
+cukup matang secara visual (Stars sudah deep-blue night sky sesuai brief,
+Video sudah pakai `.cta-button` yang otomatis ikut ter-upgrade sejak
+Foundation). Fokusnya murni **konsistensi token** (radius/shadow), bukan
+perubahan besar.
+
+**File yang berubah:**
+
+- `css/scene/scene-stars.css` — modal `.memory-card` (kartu kenangan saat
+  bintang di-tap): radius `16px → --radius-lg`, tambah `box-shadow: var(--shadow-lg)`
+  (sebelumnya tidak ada shadow sama sekali). Gambar/video di dalamnya
+  `8px → --radius-sm`.
+- `css/scene/scene-quiz.css` — `.quiz-option` (kartu jawaban): radius
+  `14px → --radius-sm`, shadow hitam generik `→ --shadow-sm`.
+- `css/scene/scene-call.css` — tombol Terima/Tolak dapat `box-shadow:
+  var(--shadow-md)` (sebelumnya flat, tanpa shadow sama sekali — kurang
+  "satisfying" untuk tombol sepenting ini). `.chat-nag` (notifikasi "jangan
+  ditolak"): radius `14px → --radius-sm`, shadow hitam generik `→ --shadow-lg`.
+- `css/scene/scene-talking-photo.css` — `.talking-photo__frame`: radius
+  `28px → --radius-lg` (kebetulan persis sama, tinggal tokenisasi), shadow
+  hitam generik `→ --shadow-lg`. **Tidak menyentuh** logic `transform: scale()`
+  untuk speaking/pulse — itu mekanisme presisi (lihat komentar kalibrasi di
+  atas file), murni ganti nilai shadow/radius saja.
+- `css/scene/scene-video.css` — **tidak diubah.** Sudah cukup sinematik
+  (`background: #000`, video fullscreen), tombol play sudah otomatis
+  ter-upgrade karena pakai `.cta-button`. Brief "Video Cards" (larger play
+  button dst.) sebenarnya lebih relevan ke video di DALAM modal Stars
+  (`.memory-card__body video`, sudah dapat radius token di atas) — video
+  fullscreen Scene 8 ini bukan sebuah "card", jadi tidak perlu diseragamkan
+  ke situ.
+
+**Kenapa `transform: scale()` di beberapa file ini TIDAK dipecah jadi
+`scale`/`translate` terpisah** (beda dari pola Foundation/Polish 2):
+hanya dipecah kalau ada DUA jenis transform yang perlu jalan independen di
+elemen yang sama (misalnya animasi napas + feedback tekan). Di
+`.quiz-option`, `.scene-call__button`, `.talking-photo__frame` — cuma ada
+SATU jenis transform (`scale`) yang dipakai, jadi `transform: scale()`
+biasa sudah aman, tidak ada yang perlu dipecah. Jangan refactor yang tidak
+perlu (brief Developer Notes: "Do not refactor unrelated code").
+
+---
+
 <!-- Sprint berikutnya ditambah di bawah ini, format sama: judul, file baru,
      file berubah, catatan penting untuk lanjutan. -->
