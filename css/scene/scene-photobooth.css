@@ -142,6 +142,13 @@
   height: 100%;
   object-fit: contain;
   pointer-events: none;
+  /* Frame SENGAJA disembunyikan saat live capture — cuma dipakai sebagai
+     sumber ctx.drawImage() ke canvas hasil akhir (lihat composeFinalPreview
+     di scene-photobooth.js). User baru lihat frame di panel Preview,
+     bukan sambil motret. Elemen ini tetap harus ADA di DOM (bukan
+     dihapus) karena naturalWidth/naturalHeight-nya dipakai buat hitung
+     aspect ratio & komposit final. */
+  opacity: 0;
 }
 
 .photobooth__flash {

@@ -231,5 +231,137 @@ perlu (brief Developer Notes: "Do not refactor unrelated code").
 
 ---
 
+## Perbaikan pacing Welcome (feedback user, di luar urutan sprint)
+
+User konfirmasi typing di Welcome kerasa kecepetan (sebelumnya sengaja
+dipertahankan default 1400ms atas permintaan user sendiri di Polish 1
+lanjutan). Sekarang dinaikkan ke **1900ms**, khusus di
+`js/scene/scene-welcome.js` lewat parameter `pauseBetween` — TIDAK ubah
+`DEFAULT_PAUSE_MS` global di `js/animation.js`, jadi scene lain (Talking
+Photo, Letter, dll.) tidak ikut kena.
+
+---
+
+## Polish 4 — Letter ✅
+
+Sebelumnya scene ini sudah punya mekanisme bagus (typewriter per paragraf,
+auto-scroll pelan yang jeda kalau disentuh manual) tapi tampilannya masih
+polos — background flat, tidak ada "kertas", tidak ada shadow.
+
+**File yang berubah:**
+
+- `css/scene/scene-letter.css`
+  - `.scene-letter` — background jadi `var(--color-paper)`, jadi backdrop
+    hangat tempat "lembar surat" duduk di atasnya.
+  - `.letter__sheet` — sekarang benar-benar terlihat seperti lembar kertas:
+    gradient putih-krem halus, `border-radius: var(--radius-md)`,
+    `box-shadow: var(--shadow-lg)` ("soft paper shadow" dari brief), plus
+    aksen garis tipis emas (`--color-accent-secondary`) di tepi atas — detail
+    kecil ala kop surat, tanpa perlu asset gambar tekstur kertas (brief:
+    "Never use fake assets" — jadi solusinya CSS gradient, bukan pura-pura
+    ada file tekstur).
+  - `.letter__paragraph` — font-size naik ke `--font-size-md` (dari base)
+    biar terasa lebih seperti surat sungguhan, margin-bottom naik ke
+    `--space-lg`. **Tambah `animation: fade-in`** — tiap paragraf baru
+    (dibuat lewat `document.createElement` di JS) otomatis fade-in begitu
+    masuk DOM, jalan BARENGAN dengan efek ketik karakter-per-karakter yang
+    sudah ada — persis dua item brief ("fade-in text" + "gentle typewriter
+    effect") tercapai tanpa perlu ubah logic JS sama sekali, cukup CSS.
+  - `.letter__salutation` — `align-self: flex-start` (sebelumnya ikut center
+    dari parent flex, sekarang rata kiri seperti pembuka surat sungguhan).
+
+**Tidak diubah (di luar scope polish visual):**
+- Musik piano BGM masih tertunda ke sprint Audio System terpisah (lihat
+  `PROJECT_STATE.md` §7 — audio memang sengaja belum digarap).
+- Logic auto-scroll & typewriter JS tidak disentuh sama sekali, cuma
+  presentasi visual.
+
+---
+
+## 🐛 Bug Fix — Photo Booth tidak bisa lanjut ke Scrapbook
+
+**Root cause (dikonfirmasi, sesuai investigasi 10 poin di bug report):**
+
+`#photobooth-continue-button` (index.html baris 289) punya class
+`cta-button cta-button--fade`. Sejak Polish 1 Foundation, `.cta-button--fade`
+defaultnya `opacity: 0; pointer-events: none;` dan HANYA berubah terlihat +
+bisa diklik kalau class `.is-visible` ditambahkan (lihat `global.css`).
+Semua tombol `--fade` lain di project selalu punya baris
+`xxx.classList.add("is-visible")` di suatu tempat di JS scene-nya —
+**tombol ini yang satu-satunya kelewatan.** `setState("continue")` di
+`scene-photobooth.js` cuma menampilkan PANEL-nya (`display:flex`), tapi
+tombol di dalamnya tetap `opacity:0;pointer-events:none` selamanya.
+Persis cocok sama gejala: layar putih kosong, tombol tidak bisa diklik
+sama sekali (bukan soal listener/z-index/overlay — listener sudah
+terpasang benar, elemennya saja yang tidak pernah "dinyalakan" secara visual/interaktif).
+
+**Fix:** `js/scene/scene-photobooth.js` — `continueButton.classList.add("is-visible")`
+ditambahkan di `handleWhatsappClick()` dan `handleSkipShareClick()`
+(dua-duanya, karena keduanya sama-sama transisi ke state "continue").
+
+**Fix lain yang menyertai (root cause berbeda, ditemukan saat investigasi):**
+
+1. **Frame ikut tampil saat live capture** (request baru user): `.photobooth__frame-image`
+   di-overlay `position:absolute;inset:0` langsung di atas video kamera tanpa
+   opacity gating. Fix: `css/scene/scene-photobooth.css` — tambah `opacity: 0`
+   permanen di elemen ini. Elemen TETAP ada di DOM (tidak dihapus/`display:none`)
+   karena `naturalWidth`/`naturalHeight`-nya masih dipakai buat hitung aspect
+   ratio (`ensureFrameAspectRatio`) dan sebagai source `ctx.drawImage()` di
+   komposit final — cuma tampilan live-nya yang disembunyikan.
+
+2. **Kemungkinan penyebab "gambar jadi 2" saat preview:** ditelusuri seluruh
+   state machine, TIDAK ketemu jalur yang bisa bikin dua panel `.is-active`
+   bersamaan (`setState()` selalu bersih-bersih semua panel dulu sebelum
+   aktifkan satu). Yang ketemu: **race condition nyata** — `shotContinueButton`
+   ("➡ Lanjut" di preview per-shot) tidak pernah di-`disable`, beda dari
+   `captureButton` yang di-disable saat countdown. Dwi-tap cepat di shot
+   terakhir bisa memicu `finalizePhotoBooth()` dua kali. Ditambah,
+   `composeFinalPreview()` sebelumnya TIDAK di-`await` (padahal isinya
+   `canvas.toBlob()` yang async) sebelum `setState("preview")` — ada celah
+   waktu panel preview sudah tampil tapi `previewImageElement.src` belum
+   ke-update ke gambar final (berpotensi sempat menampilkan gambar sisa
+   sesi sebelumnya, terutama abis "Ambil Ulang Semua").
+   - Fix: `composeFinalPreview()` sekarang `return new Promise(...)`,
+     resolve di dalam callback `toBlob`; `finalizePhotoBooth()` pakai
+     `await composeFinalPreview()` sebelum `setState("preview")`.
+   - Fix: `handleShotContinueClick()` sekarang guard `if (shotContinueButton.disabled) return;`
+     + disable tombolnya sendiri di awal; re-enable di `handleCaptureClick()`
+     (shot baru) dan `resetScene()`.
+   - **Catatan jujur:** ini kemungkinan penyebab paling masuk akal yang
+     ketemu lewat code review statis, tapi tidak 100% bisa dipastikan tanpa
+     reproduce langsung. Kalau setelah fix ini masih kejadian, tolong info
+     layout mana yang dipakai (Single/Triple/Korean Six) pas bug muncul.
+
+---
+
+## Polish 5 — Final Gift + Ending + Photobooth + Scrapbook ✅
+
+**File yang berubah (visual, di luar bug fix di atas):**
+
+- `css/scene/scene-final-gift.css` — tambah radial glow pink tipis di
+  belakang konten (pola sama seperti Birthday di Polish 2), momen ini
+  sama-sama "perayaan".
+- `css/scene/scene-ending.css`
+  - Background sekarang gradient sendiri: pink soft → cream, identitas
+    "menoleh ke belakang, nostalgic", beda dari Birthday/Final Gift yang
+    lebih pink cerah.
+  - `.ending__stat` (angka hari/jam/menit) sekarang jadi "kartu" kecil
+    (background putih transparan, `--radius-sm`, `--shadow-sm`) —
+    sebelumnya cuma angka polos mengambang, sekarang punya hierarki visual
+    lebih jelas.
+- `css/scene/scene-scrapbook.css` — `.scrapbook__page` & `.scrapbook__new-photo`
+  radius/shadow ditokenisasi. **Sengaja TIDAK** menyentuh warna meja kayu,
+  tape, atau shadow foto-foto lama (`.scrapbook__old-photo`) — itu detail
+  yang memang didesain "vintage/sepia", beda konteks dari sistem
+  shadow warm-tinted lainnya, mengubahnya justru merusak kesan handmade-nya.
+
+**Kenapa Photobooth tidak dapat polish visual tambahan di luar bug fix:**
+scene ini paling kompleks (9-panel state machine) dan baru saja diubah
+karena bug — fokus sesi ini stabilitas dulu. Polish visual murni untuk
+Photobooth (kalau memang perlu) sebaiknya jadi sprint sendiri setelah user
+konfirmasi ketiga bug di atas sudah benar-benar beres di device asli.
+
+---
+
 <!-- Sprint berikutnya ditambah di bawah ini, format sama: judul, file baru,
      file berubah, catatan penting untuk lanjutan. -->

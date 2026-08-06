@@ -25,7 +25,7 @@ export function createWelcomeScene({ onFinished } = {}) {
   return {
     onEnter() {
       ambient.mount();
-      typeSequence(textElement, WELCOME_LINES).then(() => {
+      typeSequence(textElement, WELCOME_LINES, { pauseBetween: 1900 }).then(() => {
         onFinished?.();
       });
     },

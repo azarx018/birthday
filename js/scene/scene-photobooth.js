@@ -205,44 +205,54 @@ export function createPhotoboothScene({ onFinished } = {}) {
    * masing-masing (`currentLayout.slots`, posisi dalam persen), baru
    * frame PNG di atasnya. Canvas di-scale up ke minimal `MIN_EXPORT_WIDTH`
    * supaya hasil ekspor tetap resolusi tinggi walau asset frame-nya kecil.
+   *
+   * Return Promise yang baru resolve setelah `previewImageElement.src`
+   * benar-benar terisi (toBlob async) — dipanggil dengan `await` di
+   * `finalizePhotoBooth()` supaya panel preview tidak sempat tampil
+   * sebelum gambar final benar-benar siap (celah ini sebelumnya bisa
+   * memperlihatkan gambar sisa sesi sebelumnya sesaat, terutama kalau
+   * user retake berkali-kali).
    */
   function composeFinalPreview() {
-    const frameNaturalWidth = frameImageElement.naturalWidth;
-    const frameNaturalHeight = frameImageElement.naturalHeight;
-    const scale = Math.max(1, MIN_EXPORT_WIDTH / frameNaturalWidth);
-    const canvasWidth = Math.round(frameNaturalWidth * scale);
-    const canvasHeight = Math.round(frameNaturalHeight * scale);
+    return new Promise((resolve) => {
+      const frameNaturalWidth = frameImageElement.naturalWidth;
+      const frameNaturalHeight = frameImageElement.naturalHeight;
+      const scale = Math.max(1, MIN_EXPORT_WIDTH / frameNaturalWidth);
+      const canvasWidth = Math.round(frameNaturalWidth * scale);
+      const canvasHeight = Math.round(frameNaturalHeight * scale);
 
-    canvasElement.width = canvasWidth;
-    canvasElement.height = canvasHeight;
-    const ctx = canvasElement.getContext("2d");
+      canvasElement.width = canvasWidth;
+      canvasElement.height = canvasHeight;
+      const ctx = canvasElement.getContext("2d");
 
-    currentLayout.slots.forEach((slot, index) => {
-      const shotCanvas = capturedShots[index];
-      if (!shotCanvas) return;
+      currentLayout.slots.forEach((slot, index) => {
+        const shotCanvas = capturedShots[index];
+        if (!shotCanvas) return;
 
-      drawShotCover(
-        ctx,
-        shotCanvas,
-        (slot.xPercent / 100) * canvasWidth,
-        (slot.yPercent / 100) * canvasHeight,
-        (slot.widthPercent / 100) * canvasWidth,
-        (slot.heightPercent / 100) * canvasHeight
-      );
+        drawShotCover(
+          ctx,
+          shotCanvas,
+          (slot.xPercent / 100) * canvasWidth,
+          (slot.yPercent / 100) * canvasHeight,
+          (slot.widthPercent / 100) * canvasWidth,
+          (slot.heightPercent / 100) * canvasHeight
+        );
+      });
+
+      // Frame (border, ornamen, judul, dsb) digambar di atas — semua teks
+      // (termasuk tanggal) sudah jadi bagian dari artwork PNG-nya sendiri,
+      // area transparan otomatis memperlihatkan foto-foto yang sudah
+      // digambar duluan. TIDAK ADA teks yang digambar lewat kode di sini
+      // (keputusan user: frame harus clean, tanpa campur tangan kode).
+      ctx.drawImage(frameImageElement, 0, 0, canvasWidth, canvasHeight);
+
+      canvasElement.toBlob((blob) => {
+        if (previewObjectUrl) URL.revokeObjectURL(previewObjectUrl);
+        previewObjectUrl = URL.createObjectURL(blob);
+        previewImageElement.src = previewObjectUrl;
+        resolve();
+      }, "image/png");
     });
-
-    // Frame (border, ornamen, judul, dsb) digambar di atas — semua teks
-    // (termasuk tanggal) sudah jadi bagian dari artwork PNG-nya sendiri,
-    // area transparan otomatis memperlihatkan foto-foto yang sudah
-    // digambar duluan. TIDAK ADA teks yang digambar lewat kode di sini
-    // (keputusan user: frame harus clean, tanpa campur tangan kode).
-    ctx.drawImage(frameImageElement, 0, 0, canvasWidth, canvasHeight);
-
-    canvasElement.toBlob((blob) => {
-      if (previewObjectUrl) URL.revokeObjectURL(previewObjectUrl);
-      previewObjectUrl = URL.createObjectURL(blob);
-      previewImageElement.src = previewObjectUrl;
-    }, "image/png");
   }
 
   function renderLayoutCards() {
@@ -350,6 +360,7 @@ export function createPhotoboothScene({ onFinished } = {}) {
     shotPreviewImageElement.src = pendingShotCanvas.toDataURL("image/png");
     updateProgressIndicator();
     isCountingDown = false;
+    shotContinueButton.disabled = false;
     setState("shotPreview");
   }
 
@@ -373,11 +384,18 @@ export function createPhotoboothScene({ onFinished } = {}) {
   async function finalizePhotoBooth() {
     stopCamera();
     await playGeneratingAnimation();
-    composeFinalPreview();
+    await composeFinalPreview();
     setState("preview");
   }
 
   function handleShotContinueClick() {
+    // Guard dwi-tap: tanpa ini, dua tap cepat di shot terakhir bisa
+    // memicu finalizePhotoBooth() dua kali bersamaan (beda dari
+    // captureButton yang sudah di-disable saat countdown, tombol ini
+    // sebelumnya tidak pernah di-disable sama sekali).
+    if (shotContinueButton.disabled) return;
+    shotContinueButton.disabled = true;
+
     capturedShots.push(pendingShotCanvas);
     pendingShotCanvas = null;
     currentShotIndex += 1;
@@ -407,10 +425,12 @@ export function createPhotoboothScene({ onFinished } = {}) {
     const waUrl = `https://wa.me/${GIFT_CREATOR_WHATSAPP_NUMBER}?text=${encodeURIComponent(PHOTOBOOTH_SHARE_MESSAGE)}`;
     window.open(waUrl, "_blank", "noopener,noreferrer");
     setState("continue");
+    continueButton.classList.add("is-visible");
   }
 
   function handleSkipShareClick() {
     setState("continue");
+    continueButton.classList.add("is-visible");
   }
 
   function handleContinueClick() {
@@ -426,6 +446,7 @@ export function createPhotoboothScene({ onFinished } = {}) {
     introTextElement.textContent = "";
     startButton.classList.remove("is-visible");
     continueButton.classList.remove("is-visible");
+    shotContinueButton.disabled = false;
     if (previewObjectUrl) {
       URL.revokeObjectURL(previewObjectUrl);
       previewObjectUrl = null;
