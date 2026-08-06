@@ -1,0 +1,132 @@
+.scene-call {
+  background-color: var(--color-bg-dark);
+  gap: var(--space-2xl);
+}
+
+.scene-call__avatar-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 140px;
+  height: 140px;
+}
+
+.scene-call__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-accent-primary-soft);
+  animation: call-ring-pulse 2.2s var(--ease-out-soft) infinite;
+}
+
+.scene-call__ring--2 {
+  animation-delay: 1.1s;
+}
+
+.scene-call__avatar {
+  position: relative;
+  width: 112px;
+  height: 112px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--color-accent-primary-soft);
+}
+
+.scene-call__name {
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+  color: var(--color-text-on-dark);
+}
+
+.scene-call__status {
+  margin-top: calc(var(--space-xs) * -1);
+  font-size: var(--font-size-base);
+  color: var(--color-text-on-dark-muted);
+  animation: pulse-soft 2s var(--ease-in-out-soft) infinite;
+}
+
+.scene-call__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2xl);
+}
+
+.scene-call__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: var(--font-size-lg);
+  transition: transform var(--duration-fast) var(--ease-out-soft);
+}
+
+.scene-call__button:active {
+  transform: scale(0.9);
+}
+
+.scene-call__button--decline {
+  background-color: #e0574f;
+}
+
+.scene-call__button--accept {
+  background-color: #4fae5c;
+}
+
+/* Saat ditolak: tombol dinonaktifkan sesaat, avatar & nama diberi
+   isyarat "shake" halus sebelum kembali berdenyut normal. */
+.scene-call.is-declined .scene-call__avatar-wrap,
+.scene-call.is-declined .scene-call__name {
+  animation: call-denied-shake var(--duration-slow) var(--ease-out-soft);
+}
+
+.scene-call.is-declined .scene-call__ring {
+  animation-play-state: paused;
+  opacity: 0;
+}
+
+.scene-call.is-declined .scene-call__button {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* ---------- Chat nag notification (dipakai ulang saat Tolak) ---------- */
+
+.chat-nag {
+  position: fixed;
+  top: var(--space-lg);
+  left: 50%;
+  width: calc(100% - var(--space-lg) * 2);
+  max-width: 320px;
+  padding: var(--space-sm) var(--space-md);
+  background-color: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -20px);
+  transition:
+    opacity var(--duration-base) var(--ease-out-soft),
+    transform var(--duration-base) var(--ease-out-soft);
+  z-index: var(--z-overlay);
+}
+
+.chat-nag.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.chat-nag__sender {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  color: var(--color-accent-primary);
+}
+
+.chat-nag__message {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-on-light);
+}

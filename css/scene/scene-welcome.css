@@ -1,0 +1,17 @@
+.scene-welcome {
+  background: var(--gradient-opening);
+}
+
+.scene-welcome__text {
+  position: relative;
+  /* Perlu di atas .ambient-layer (z-index: var(--z-ambient)) supaya
+     partikel sparkle tidak menutupi teks. */
+  z-index: 2;
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  font-weight: 500;
+  color: var(--color-text-on-dark);
+  max-width: var(--content-max-width);
+  line-height: var(--line-height-tight);
+  text-shadow: 0 0 24px rgba(245, 184, 201, 0.35);
+}

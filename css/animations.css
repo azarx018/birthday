@@ -1,0 +1,252 @@
+/* Keyframes yang dipakai berulang di banyak scene */
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes cursor-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes balloon-float {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  8% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-115vh) translateX(var(--drift, 20px)) rotate(var(--rotate, 6deg));
+    opacity: 0;
+  }
+}
+
+/* Shake halus & berkala, bukan terus-menerus, supaya terasa "mengundang"
+   bukan patah/rusak. Sebagian besar durasi kotak diam. */
+@keyframes gift-idle-shake {
+  0%,
+  92%,
+  100% {
+    transform: rotate(0deg);
+  }
+  93% {
+    transform: rotate(-3deg);
+  }
+  94% {
+    transform: rotate(3deg);
+  }
+  95% {
+    transform: rotate(-2deg);
+  }
+  96% {
+    transform: rotate(2deg);
+  }
+  97% {
+    transform: rotate(-1deg);
+  }
+}
+
+@keyframes gift-glow-burst {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  40% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(3.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(4.5);
+  }
+}
+
+/* Cincin yang membesar & memudar di sekitar avatar telepon masuk,
+   dua ring dijalankan dengan delay berbeda supaya terasa "berdenyut". */
+@keyframes call-ring-pulse {
+  0% {
+    transform: scale(0.85);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+
+/* Feedback singkat saat tombol Tolak ditekan — bukan animasi rusak,
+   hanya isyarat "panggilan ditolak" sebelum layar kembali tenang. */
+@keyframes call-denied-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+/* Denyut sesaat saat foto Scene 10 pindah dari mingkem ke mangap.
+   Berakhir di scale(1.035) — sama dengan nilai .is-speaking di CSS —
+   supaya begitu class ini dilepas, tidak ada "loncatan" visual. */
+@keyframes talking-photo-pulse {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.09);
+  }
+  100% {
+    transform: scale(1.035);
+  }
+}
+
+/* Kedipan mata: overlay kelopak diam tersembunyi (scaleY 0), lalu
+   menutup sekilas (scaleY 1) sebelum terbuka lagi. Dipicu manual dari
+   JS lewat class .is-blinking, bukan infinite, supaya intervalnya bisa
+   diacak (terasa natural, tidak seperti metronom). */
+@keyframes eyelid-blink {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scaleY(0);
+  }
+  40%,
+  60% {
+    transform: translate(-50%, -50%) scaleY(1);
+  }
+}
+
+/* Kilatan flash sesaat waktu tombol "Ambil Foto" ditekan. */
+@keyframes photobooth-flash {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Angka countdown "pop" masuk lalu diam sebentar sebelum diganti angka
+   berikutnya — smooth & playful, bukan cuma ganti teks tiba-tiba. */
+@keyframes photobooth-countdown-pop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  35% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  55% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Partikel ambient (sparkle) melayang pelan ke atas sambil muncul lalu
+   memudar — dipakai oleh .ambient-particle di css/ambient.css. Nilai
+   drift & durasi berbeda-beda per partikel lewat custom property, jadi
+   satu keyframe ini menghasilkan gerakan yang terasa acak/organik. */
+@keyframes ambient-drift {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: var(--particle-opacity, 0.7);
+  }
+  90% {
+    opacity: var(--particle-opacity, 0.7);
+  }
+  100% {
+    transform: translate3d(var(--drift-x, 12px), var(--drift-y, -120px), 0);
+    opacity: 0;
+  }
+}
+
+/* Denyut cahaya lembut untuk .ambient-glow — bloom yang "bernapas",
+   bukan berkedip, supaya terasa tenang bukan mencolok. */
+@keyframes ambient-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes star-twinkle {
+  0%,
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.85);
+  }
+}
+
+/* Dipakai oleh animation.js di scene mana pun yang punya efek mengetik */
+.typing-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background-color: currentColor;
+  animation: cursor-blink 900ms steps(1) infinite;
+}
+

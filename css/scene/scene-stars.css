@@ -1,0 +1,212 @@
+.scene-stars {
+  background: linear-gradient(180deg, #150a12 0%, var(--color-bg-dark) 55%, var(--color-bg-dark-soft) 100%);
+  overflow: hidden;
+}
+
+.stars-counter {
+  position: absolute;
+  top: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-on-dark-muted);
+  z-index: var(--z-overlay);
+}
+
+.stars-sky {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.scene-stars__continue-wrap {
+  position: absolute;
+  bottom: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-overlay);
+}
+
+/* ---------- Dekorasi: bintang kecil & bulan ---------- */
+
+.star-deco {
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  width: var(--size, 2px);
+  height: var(--size, 2px);
+  background-color: #fff;
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: star-twinkle var(--duration, 3s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  pointer-events: none;
+}
+
+.moon {
+  position: absolute;
+  top: 8%;
+  right: 12%;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff9ec 0%, #f5e8c8 45%, #e3c17e 100%);
+  box-shadow: 0 0 40px rgba(245, 232, 200, 0.4);
+  pointer-events: none;
+}
+
+.moon::before,
+.moon::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(211, 184, 138, 0.5);
+}
+
+.moon::before {
+  top: 18px;
+  left: 14px;
+  width: 12px;
+  height: 12px;
+}
+
+.moon::after {
+  top: 38px;
+  left: 34px;
+  width: 8px;
+  height: 8px;
+}
+
+/* ---------- Bintang interaktif ---------- */
+
+.star-interactive {
+  position: absolute;
+  top: var(--top);
+  left: var(--left);
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.star-interactive::before {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(227, 193, 126, 0.35) 0%, rgba(227, 193, 126, 0) 70%);
+}
+
+.star-interactive__shape {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background-color: var(--color-accent-secondary);
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+  animation: star-twinkle 2.4s ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  transition:
+    transform var(--duration-fast) var(--ease-out-soft),
+    filter var(--duration-base) var(--ease-out-soft),
+    opacity var(--duration-base) var(--ease-out-soft);
+}
+
+.star-interactive:active .star-interactive__shape {
+  transform: scale(0.85);
+}
+
+.star-interactive.is-collected .star-interactive__shape {
+  animation: none;
+  filter: grayscale(0.5) brightness(0.75);
+  opacity: 0.7;
+}
+
+/* ---------- Modal kartu kenangan ---------- */
+
+.memory-card-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  background: rgba(18, 10, 15, 0.72);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-base) var(--ease-out-soft);
+  z-index: var(--z-overlay);
+}
+
+.memory-card-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.memory-card {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: var(--space-lg);
+  background-color: var(--color-bg-light);
+  border-radius: 16px;
+  transform: scale(0.9);
+  transition: transform var(--duration-base) var(--ease-out-soft);
+}
+
+.memory-card-overlay.is-open .memory-card {
+  transform: scale(1);
+}
+
+.memory-card__close {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--color-bg-light-soft);
+  color: var(--color-text-on-light);
+  font-size: var(--font-size-md);
+  line-height: 1;
+}
+
+.memory-card__body img,
+.memory-card__body video {
+  display: block;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.memory-card__body audio {
+  width: 100%;
+  margin-top: var(--space-sm);
+}
+
+.memory-card__text {
+  font-family: var(--font-display);
+  font-size: var(--font-size-md);
+  color: var(--color-text-on-light);
+  line-height: var(--line-height-base);
+}
+
+.memory-card__caption {
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-on-light-muted);
+}

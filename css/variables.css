@@ -1,0 +1,119 @@
+/*
+  Design Tokens
+  -------------
+  Semua nilai visual & timing didefinisikan di sini agar konsisten
+  di seluruh scene dan mudah diubah tanpa menyentuh file lain.
+*/
+
+:root {
+  /* ---------- Color: Base ---------- */
+  --color-bg-dark: #2b1620;
+  --color-bg-dark-soft: #3a2029;
+  --color-bg-light: #fff5f7;
+  --color-bg-light-soft: #fbe6ec;
+
+  --color-text-on-dark: #f9eef1;
+  --color-text-on-dark-muted: #cfa9b3;
+  --color-text-on-light: #3a2029;
+  --color-text-on-light-muted: #8a6a72;
+
+  /* ---------- Color: Accent ----------
+     Pink sebagai warna utama (sesuai karakter Rizka),
+     gold dipertahankan tipis sebagai secondary accent
+     supaya kesan tetap elegant, bukan norak. */
+  --color-accent-primary: #e8829f;
+  --color-accent-primary-soft: #f5b8c9;
+  --color-accent-secondary: #e3c17e;
+
+  /* ---------- Color: Atmosphere Palette ----------
+     Warna tambahan untuk memberi identitas berbeda tiap scene
+     (background gradient, ambient glow) tanpa keluar dari nuansa
+     "soft pink elegant". */
+  --color-bg-purple: #4a2a49;
+  --color-bg-cream: #fbf1e7;
+  --color-bg-blue-deep: #1c2140;
+  --color-paper: #faf3e6;
+
+  /* ---------- Gradient Presets ----------
+     Disusun dari warna di atas. Satu preset bisa dipakai lebih dari
+     satu scene yang berbagi identitas emosional yang sama (lihat
+     POLISH_LOG.md) — jangan tulis ulang gradient yang sama persis di
+     tiap scene-*.css.
+     --gradient-opening: dipakai Preloader & Welcome ("babak pembuka",
+     gelap & tenang, sedikit hangat di tengah supaya tidak terasa flat). */
+  --gradient-opening: linear-gradient(160deg, var(--color-bg-dark) 0%, var(--color-bg-purple) 55%, var(--color-bg-dark) 100%);
+
+  /* ---------- Spacing Scale ---------- */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1.25rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4.5rem;
+
+  /* ---------- Typography ----------
+     Fredoka: font display untuk judul/teks besar, rounded & playful.
+     Quicksand: font body untuk paragraf, tetap soft tapi mudah dibaca.
+     Fallback system font tetap disiapkan jika Google Fonts gagal load. */
+  --font-display: "Fredoka", system-ui, sans-serif;
+  --font-base: "Quicksand", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-md: 1.125rem;
+  --font-size-lg: 1.5rem;
+  --font-size-xl: 2rem;
+  --font-size-2xl: 2.75rem;
+  --line-height-base: 1.6;
+  --line-height-tight: 1.2;
+
+  /* ---------- Motion: Duration ---------- */
+  --duration-fast: 300ms;
+  --duration-base: 500ms;
+  --duration-slow: 700ms;
+  --duration-slower: 1000ms;
+
+  /* ---------- Motion: Easing ----------
+     Cubic-bezier custom, bukan default ease,
+     supaya transisi terasa "cinematic" bukan mekanis. */
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* ---------- Radius Scale ----------
+     Satu skala dipakai di seluruh kartu & tombol supaya bahasa visual
+     konsisten. --radius-pill khusus untuk elemen kapsul (tombol, chip). */
+  --radius-sm: 12px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
+  --radius-pill: 999px;
+
+  /* ---------- Shadow Scale ----------
+     Warna shadow diturunkan dari --color-bg-dark (bukan hitam murni),
+     supaya bayangan terasa "warm" menyatu dengan palet, bukan generic
+     drop-shadow abu-abu. Tetap tipis sesuai arahan "avoid heavy shadow". */
+  --shadow-sm: 0 2px 8px rgba(43, 22, 32, 0.16);
+  --shadow-md: 0 6px 20px rgba(43, 22, 32, 0.18);
+  --shadow-lg: 0 14px 36px rgba(43, 22, 32, 0.22);
+  --shadow-glow-primary: 0 0 24px rgba(232, 130, 159, 0.35);
+
+  /* ---------- Ambient Effect Tokens ----------
+     Dipakai oleh js/effects/ambient.js (lapisan sparkle/glow dekoratif).
+     Rentang, bukan nilai tunggal, supaya tiap partikel terasa organik,
+     tidak seperti pola yang diulang. */
+  --ambient-particle-size-min: 2px;
+  --ambient-particle-size-max: 6px;
+  --ambient-duration-min: 6s;
+  --ambient-duration-max: 14s;
+  --ambient-opacity-max: 0.85;
+
+  /* ---------- Layout ---------- */
+  --content-max-width: 480px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+
+  /* ---------- Z-Index Scale ---------- */
+  --z-scene: 10;
+  --z-scene-active: 20;
+  --z-overlay: 30;
+  --z-ambient: 1;
+}

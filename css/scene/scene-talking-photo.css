@@ -1,0 +1,116 @@
+/**
+ * Kalibrasi kelopak mata di bawah ini dihitung dari foto mingkem
+ * (sender-avatar-mingkem.jpg). Kalau foto ini diganti nanti, angka-angka
+ * ini KEMUNGKINAN BESAR perlu dihitung ulang — jangan cuma tebak, minta
+ * bantuan hitung ulang dari posisi mata di foto baru.
+ */
+.scene-talking-photo {
+  --tp-eye-left-x: 37%; /* mata kanan subjek (kiri penonton) */
+  --tp-eye-right-x: 63%; /* mata kiri subjek (kanan penonton) */
+  --tp-eye-y: 40%;
+  --tp-eye-w: 10%;
+  --tp-eye-h: 4.5%;
+
+  background-color: var(--color-bg-dark);
+  gap: var(--space-lg);
+}
+
+/* Bingkai foto disembunyikan sampai audio BENAR-BENAR mulai bersuara
+   (class .is-visible ditambahkan lewat JS saat event "playing" audio).
+   Tidak ada foto yang "standby" nongkrong tanpa audio. */
+.talking-photo__frame {
+  position: relative;
+  width: min(72vw, 300px);
+  aspect-ratio: 3 / 4;
+  border-radius: 28px;
+  overflow: hidden;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: scale(0.97);
+  transition:
+    opacity var(--duration-slow) var(--ease-out-soft),
+    transform var(--duration-base) var(--ease-out-soft);
+}
+
+.talking-photo__frame.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Sedikit lebih besar selama audio berbunyi (mangap), kembali normal
+   saat diam (mingkem). */
+.talking-photo__frame.is-speaking {
+  transform: scale(1.035);
+}
+
+/* Denyut sesaat, sekali, PERSIS di momen mulai bicara. Berakhir di nilai
+   scale yang sama dengan .is-speaking supaya tidak "meloncat" saat class
+   ini dilepas lagi oleh JS setelah animasinya selesai. */
+.talking-photo__frame.is-pulsing {
+  animation: talking-photo-pulse var(--duration-base) var(--ease-out-soft);
+}
+
+.talking-photo__layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  transition:
+    opacity var(--duration-fast) ease-out,
+    filter var(--duration-fast) ease-out;
+}
+
+/* Mingkem: default terlihat, sedikit digelapkan. */
+.talking-photo__layer--closed {
+  opacity: 1;
+  filter: brightness(0.85);
+}
+
+/* Mangap: default tersembunyi, lebih terang saat tampil. */
+.talking-photo__layer--open {
+  opacity: 0;
+  filter: brightness(1.12);
+}
+
+.talking-photo__frame.is-speaking .talking-photo__layer--closed {
+  opacity: 0;
+}
+
+.talking-photo__frame.is-speaking .talking-photo__layer--open {
+  opacity: 1;
+}
+
+.talking-photo__eyelid {
+  position: absolute;
+  top: var(--tp-eye-y);
+  width: var(--tp-eye-w);
+  height: var(--tp-eye-h);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scaleY(0);
+  transform-origin: center;
+  pointer-events: none;
+}
+
+.talking-photo__eyelid--left {
+  left: var(--tp-eye-left-x);
+}
+
+.talking-photo__eyelid--right {
+  left: var(--tp-eye-right-x);
+}
+
+.talking-photo__eyelid.is-blinking {
+  animation: eyelid-blink 260ms ease-in-out;
+}
+
+.talking-photo__subtitle {
+  min-height: 3.2em;
+  max-width: var(--content-max-width);
+  padding: 0 var(--space-lg);
+  font-size: var(--font-size-base);
+  color: var(--color-text-on-dark);
+  text-align: center;
+  line-height: 1.6;
+}

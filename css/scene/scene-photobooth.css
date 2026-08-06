@@ -1,0 +1,248 @@
+.scene-photobooth {
+  background: linear-gradient(160deg, var(--color-bg-light) 0%, var(--color-bg-light-soft) 100%);
+  gap: var(--space-lg);
+}
+
+/* Semua "state" ditumpuk di tempat yang sama, cuma satu yang aktif
+   (.is-active) di satu waktu — state machine sederhana lewat CSS,
+   bukan lewat show/hide banyak elemen manual berulang-ulang. */
+.photobooth__panel {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  max-width: var(--content-max-width);
+  padding: 0 var(--space-lg);
+}
+
+.photobooth__panel.is-active {
+  display: flex;
+}
+
+.photobooth__intro-heading {
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+  font-weight: 500;
+  color: var(--color-text-on-light);
+  text-align: center;
+}
+
+.photobooth__intro-text {
+  min-height: 4.2em;
+  font-family: var(--font-base);
+  font-size: var(--font-size-lg);
+  text-align: center;
+  color: var(--color-text-on-light);
+}
+
+/* ---------- Choose Layout ---------- */
+
+.photobooth__layout-heading {
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-on-light);
+}
+
+.photobooth__layout-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  width: 100%;
+}
+
+.photobooth__layout-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  width: 100%;
+  padding: var(--space-md);
+  background-color: #fff;
+  border: 2px solid var(--color-bg-light-soft);
+  border-radius: 16px;
+  text-align: left;
+  transition:
+    border-color var(--duration-fast) ease-out,
+    transform var(--duration-fast) ease-out;
+}
+
+.photobooth__layout-card:active {
+  transform: scale(0.98);
+  border-color: var(--color-accent-primary);
+}
+
+.photobooth__layout-card-preview {
+  flex-shrink: 0;
+  display: grid;
+  gap: 3px;
+  width: 56px;
+  height: 56px;
+  padding: 5px;
+  background-color: var(--color-bg-light-soft);
+  border-radius: 10px;
+}
+
+.photobooth__layout-card-preview-slot {
+  background-color: var(--color-accent-primary-soft);
+  border-radius: 3px;
+}
+
+.photobooth__layout-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.photobooth__layout-card-title {
+  font-family: var(--font-display);
+  font-size: var(--font-size-base);
+  color: var(--color-text-on-light);
+}
+
+.photobooth__layout-card-description {
+  font-family: var(--font-base);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-on-light-muted);
+}
+
+.photobooth__layout-card-result {
+  margin-top: 2px;
+  font-family: var(--font-base);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-accent-primary);
+}
+
+/* ---------- Camera & frame overlay ---------- */
+
+.photobooth__frame-wrap {
+  position: relative;
+  width: min(84vw, 340px);
+  /* aspect-ratio diisi via JS begitu frame PNG selesai load, supaya
+     selalu sinkron sama rasio asset asli, bukan angka tebakan. */
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
+  background-color: var(--color-bg-dark);
+}
+
+.photobooth__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* mirror, terasa natural kayak ngaca */
+}
+
+.photobooth__frame-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+.photobooth__flash {
+  position: absolute;
+  inset: 0;
+  background-color: #fff;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.photobooth__flash.is-flashing {
+  animation: photobooth-flash 220ms ease-out;
+}
+
+.photobooth__error-text {
+  font-family: var(--font-base);
+  font-size: var(--font-size-base);
+  text-align: center;
+  color: var(--color-text-on-light-muted);
+}
+
+.photobooth__progress {
+  font-family: var(--font-display);
+  font-size: var(--font-size-sm);
+  letter-spacing: 0.05em;
+  color: var(--color-text-on-light-muted);
+}
+
+.photobooth__pose-prompt {
+  min-height: 1.6em;
+  font-family: var(--font-base);
+  font-size: var(--font-size-base);
+  text-align: center;
+  color: var(--color-text-on-light);
+}
+
+.photobooth__countdown {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 4rem;
+  color: #fff;
+  text-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+.photobooth__countdown:empty {
+  display: none;
+}
+
+.photobooth__countdown.is-popping {
+  animation: photobooth-countdown-pop 700ms var(--ease-out-soft);
+}
+
+/* ---------- Generating (loading cinematic) ---------- */
+
+.photobooth__generating-text {
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  text-align: center;
+  color: var(--color-text-on-light);
+  opacity: 0;
+  transition: opacity 280ms ease-out;
+}
+
+.photobooth__generating-text.is-visible {
+  opacity: 1;
+  animation: pulse-soft 1.4s var(--ease-in-out-soft) infinite;
+}
+
+/* ---------- Preview ---------- */
+
+.photobooth__preview-image {
+  width: min(84vw, 340px);
+  border-radius: 20px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.2);
+}
+
+.photobooth__preview-actions {
+  display: flex;
+  gap: var(--space-md);
+}
+
+/* ---------- Post-download share dialog ---------- */
+
+.photobooth__share-text {
+  font-family: var(--font-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  text-align: center;
+  color: var(--color-text-on-light);
+  white-space: pre-line;
+}
+
+.photobooth__share-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+}

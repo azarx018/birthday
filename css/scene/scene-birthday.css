@@ -1,0 +1,77 @@
+.scene-birthday {
+  background: linear-gradient(160deg, var(--color-bg-light) 0%, var(--color-bg-light-soft) 100%);
+  overflow: hidden;
+}
+
+.scene-birthday__balloons {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.scene-birthday__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.scene-birthday__title {
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+  font-weight: 500;
+  color: var(--color-text-on-light);
+}
+
+.scene-birthday__name {
+  font-family: var(--font-display);
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-accent-primary);
+}
+
+.scene-birthday__button {
+  margin-top: var(--space-lg);
+  min-height: 48px;
+  padding: 0 var(--space-xl);
+  border-radius: 999px;
+  background-color: var(--color-accent-primary);
+  color: var(--color-bg-light);
+  font-family: var(--font-display);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(232, 130, 159, 0.35);
+  transition: transform var(--duration-fast) var(--ease-out-soft);
+}
+
+.scene-birthday__button:active {
+  transform: scale(0.96);
+}
+
+/* Balon: dibuat dinamis lewat js/effects/balloons.js */
+.balloon {
+  position: absolute;
+  bottom: -15%;
+  left: var(--left, 50%);
+  width: var(--size, 46px);
+  height: calc(var(--size, 46px) * 1.2);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  background-color: var(--balloon-color, var(--color-accent-primary));
+  opacity: 0;
+  animation: balloon-float var(--duration, 9s) linear forwards;
+  animation-delay: var(--delay, 0s);
+}
+
+.balloon::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -16px;
+  width: 1px;
+  height: 16px;
+  background-color: rgba(58, 32, 41, 0.2);
+  transform: translateX(-50%);
+}

@@ -1,0 +1,265 @@
+.scene-scrapbook {
+  position: relative;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.05) 0px, rgba(0, 0, 0, 0.05) 2px, transparent 2px, transparent 6px),
+    linear-gradient(160deg, #9c6b45 0%, #7a4b28 50%, #5c3719 100%);
+  overflow: hidden;
+}
+
+.scrapbook__page {
+  position: relative;
+  z-index: 1;
+  width: min(80vw, 320px);
+  padding: var(--space-xl) var(--space-lg) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  background-color: #fffaf3;
+  border-radius: 8px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.35);
+  transform-origin: top center;
+  transition:
+    transform var(--duration-slower) var(--ease-in-out-soft),
+    opacity var(--duration-slower) var(--ease-in-out-soft);
+}
+
+.scrapbook__page.is-closing {
+  transform: scaleY(0.04);
+  opacity: 0.3;
+}
+
+/* ---------- "Halaman-halaman lama" — reuse foto Scene 4, mengintip di
+   pinggir halaman biar terasa ada riwayat sebelumnya, bukan cuma teks. ---------- */
+.scrapbook__old-photo {
+  position: absolute;
+  z-index: 0;
+  width: 68px;
+  height: 90px;
+  object-fit: cover;
+  border: 4px solid #fff;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+  filter: sepia(0.3) brightness(0.95);
+}
+
+.scrapbook__old-photo--1 {
+  top: -16px;
+  left: -20px;
+  transform: rotate(-12deg);
+}
+
+.scrapbook__old-photo--2 {
+  bottom: -12px;
+  left: -16px;
+  transform: rotate(9deg);
+}
+
+.scrapbook__old-photo--3 {
+  top: 34%;
+  right: -22px;
+  transform: rotate(11deg);
+}
+
+/* ---------- Foto baru, ditempel pakai "tape" ---------- */
+
+.scrapbook__new-photo-wrap {
+  position: relative;
+  z-index: 2;
+  width: 82%;
+  opacity: 0;
+  transform: scale(0.7) rotate(-6deg);
+  transition:
+    opacity var(--duration-slow) var(--ease-out-soft),
+    transform var(--duration-slow) var(--ease-out-soft);
+}
+
+.scrapbook__new-photo-wrap.is-visible {
+  opacity: 1;
+  transform: scale(1) rotate(-2deg);
+}
+
+.scrapbook__new-photo {
+  display: block;
+  width: 100%;
+  border: 6px solid #fff;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+}
+
+.scrapbook__tape {
+  position: absolute;
+  width: 64px;
+  height: 24px;
+  background-color: rgba(255, 214, 224, 0.75);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.scrapbook__tape--left {
+  top: -10px;
+  left: 6%;
+  transform: rotate(-18deg);
+}
+
+.scrapbook__tape--right {
+  top: -10px;
+  right: 6%;
+  transform: rotate(14deg);
+}
+
+/* ---------- Stiker ---------- */
+
+.scrapbook__stickers {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.scrapbook__sticker {
+  position: absolute;
+  font-size: 1.6rem;
+  opacity: 0;
+  transform: scale(0) rotate(-20deg);
+  transition:
+    opacity var(--duration-base) var(--ease-out-soft),
+    transform var(--duration-base) var(--ease-out-soft);
+}
+
+.scrapbook__sticker.is-visible {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+.scrapbook__sticker--1 {
+  top: 4%;
+  left: 2%;
+}
+
+.scrapbook__sticker--2 {
+  top: 6%;
+  right: 4%;
+}
+
+.scrapbook__sticker--3 {
+  bottom: 22%;
+  left: 0%;
+}
+
+.scrapbook__sticker--4 {
+  bottom: 18%;
+  right: 2%;
+}
+
+/* ---------- Tanggal, label, caption ---------- */
+
+.scrapbook__date,
+.scrapbook__label {
+  opacity: 0;
+  transition: opacity var(--duration-base) ease-out;
+}
+
+.scrapbook__date.is-visible,
+.scrapbook__label.is-visible {
+  opacity: 1;
+}
+
+.scrapbook__date {
+  margin-top: var(--space-sm);
+  font-family: var(--font-base);
+  font-size: var(--font-size-sm);
+  color: #8a6a52;
+}
+
+.scrapbook__label {
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  color: #6b4226;
+}
+
+.scrapbook__caption {
+  min-height: 3.2em;
+  font-family: var(--font-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  text-align: center;
+  color: #4a3325;
+}
+
+/* ---------- Ending (setelah scrapbook menutup) ---------- */
+
+.scrapbook__ending {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-lg);
+  padding: 0 var(--space-lg);
+  text-align: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-slow) var(--ease-out-soft);
+}
+
+.scrapbook__ending.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.scrapbook__ending-text {
+  min-height: 4.8em;
+  max-width: var(--content-max-width);
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  line-height: 1.7;
+  color: var(--color-text-on-dark);
+  white-space: pre-line;
+}
+
+/* ---------- Credits ---------- */
+
+.scrapbook__credits {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--duration-slow) var(--ease-out-soft);
+}
+
+.scrapbook__credits.is-visible {
+  opacity: 1;
+}
+
+.scrapbook__credits-line {
+  font-family: var(--font-base);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-on-dark-muted);
+}
+
+.scrapbook__credits-meta {
+  margin-top: var(--space-xs);
+  font-family: var(--font-base);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  color: var(--color-text-on-dark-muted);
+  opacity: 0.7;
+}
+
+/* Link kecil, sengaja BUKAN tombol besar — fokus utama halaman ini
+   adalah Credits, restart cuma opsi halus buat yang mau ulang. */
+.scrapbook__restart-link {
+  margin-top: var(--space-sm);
+  font-family: var(--font-base);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-on-dark-muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-out-soft);
+}
+
+.scrapbook__restart-link.is-visible {
+  opacity: 1;
+}

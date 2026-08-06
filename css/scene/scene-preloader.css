@@ -1,0 +1,38 @@
+.scene-preloader {
+  background: var(--gradient-opening);
+  gap: var(--space-lg);
+}
+
+.scene-preloader__text {
+  font-size: var(--font-size-base);
+  color: var(--color-text-on-dark-muted);
+  letter-spacing: 0.04em;
+  animation: pulse-soft 1.8s var(--ease-in-out-soft) infinite;
+  /* Transisi terpisah dari animasi pulse-soft (yang menguasai opacity) —
+     translate dipakai khusus untuk efek "settle in" tiap kali pesan
+     loading berganti, lihat scene-preloader.js (toggle .is-entering). */
+  translate: 0 0;
+  transition: translate var(--duration-base) var(--ease-out-soft);
+}
+
+.scene-preloader__text.is-entering {
+  translate: 0 6px;
+}
+
+.scene-preloader__track {
+  width: 60%;
+  max-width: 220px;
+  height: 2px;
+  background-color: var(--color-bg-dark-soft);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.scene-preloader__fill {
+  height: 100%;
+  width: 0%;
+  background-color: var(--color-accent-primary);
+  border-radius: inherit;
+  box-shadow: var(--shadow-glow-primary);
+  transition: width var(--duration-base) var(--ease-out-soft);
+}

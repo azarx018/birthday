@@ -1,0 +1,50 @@
+/*
+  Ambient Layer
+  -------------
+  Lapisan dekoratif ringan (sparkle & glow) yang bisa dipasang di scene
+  manapun lewat js/effects/ambient.js untuk memberi "kehidupan" halus
+  di background. Murni dekoratif — tidak pernah menerima interaksi dan
+  tidak memengaruhi layout konten scene.
+
+  Setiap partikel diberi posisi/ukuran/warna/durasi lewat custom
+  property inline (di-generate di JS), bukan hardcode di sini, supaya
+  satu set style ini bisa dipakai ulang dengan hasil berbeda-beda.
+*/
+
+.ambient-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: var(--z-ambient);
+}
+
+.ambient-particle {
+  position: absolute;
+  left: var(--pos-x, 50%);
+  top: var(--pos-y, 50%);
+  width: var(--particle-size, 4px);
+  height: var(--particle-size, 4px);
+  border-radius: 50%;
+  background-color: var(--particle-color, var(--color-accent-primary-soft));
+  will-change: transform, opacity;
+  animation-name: ambient-drift;
+  animation-timing-function: var(--ease-in-out-soft);
+  animation-iteration-count: infinite;
+  animation-duration: var(--particle-duration, 10s);
+  animation-delay: var(--particle-delay, 0s);
+}
+
+.ambient-glow {
+  position: absolute;
+  left: var(--pos-x, 50%);
+  top: var(--pos-y, 50%);
+  width: var(--glow-size, 240px);
+  height: var(--glow-size, 240px);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--glow-color, var(--color-accent-primary)) 0%, transparent 70%);
+  filter: blur(20px);
+  opacity: 0.4;
+  will-change: transform, opacity;
+  animation: ambient-glow-pulse 6s var(--ease-in-out-soft) infinite;
+}

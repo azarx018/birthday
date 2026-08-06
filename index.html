@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Birthday Memories</title>
+  <meta name="description" content="Sebuah perjalanan kecil untuk hari yang spesial." />
+  <meta name="theme-color" content="#2b1620" />
+
+  <link rel="icon" href="assets/icons/favicon.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@400;500;600&display=swap"
+  />
+
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/variables.css" />
+  <link rel="stylesheet" href="css/global.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/scene.css" />
+  <link rel="stylesheet" href="css/ambient.css" />
+  <link rel="stylesheet" href="css/scene/scene-preloader.css" />
+  <link rel="stylesheet" href="css/scene/scene-welcome.css" />
+  <link rel="stylesheet" href="css/scene/scene-birthday.css" />
+  <link rel="stylesheet" href="css/scene/scene-gift.css" />
+  <link rel="stylesheet" href="css/scene/scene-memory.css" />
+  <link rel="stylesheet" href="css/scene/scene-fun-memories.css" />
+  <link rel="stylesheet" href="css/scene/scene-stars.css" />
+  <link rel="stylesheet" href="css/scene/scene-quiz.css" />
+  <link rel="stylesheet" href="css/scene/scene-video.css" />
+  <link rel="stylesheet" href="css/scene/scene-call.css" />
+  <link rel="stylesheet" href="css/scene/scene-talking-photo.css" />
+  <link rel="stylesheet" href="css/scene/scene-letter.css" />
+  <link rel="stylesheet" href="css/scene/scene-final-gift.css" />
+  <link rel="stylesheet" href="css/scene/scene-ending.css" />
+  <link rel="stylesheet" href="css/scene/scene-photobooth.css" />
+  <link rel="stylesheet" href="css/scene/scene-scrapbook.css" />
+</head>
+<body>
+  <main id="app">
+    <section id="scene-preloader" class="scene scene-preloader is-active" aria-live="polite">
+      <p id="preloader-text" class="scene-preloader__text">Memuat Kenangan...</p>
+      <div class="scene-preloader__track">
+        <div class="scene-preloader__fill" id="preloader-fill"></div>
+      </div>
+    </section>
+
+    <section id="scene-welcome" class="scene scene-welcome">
+      <p id="welcome-text" class="scene-welcome__text" aria-live="polite"></p>
+    </section>
+
+    <section id="scene-birthday" class="scene scene-birthday">
+      <div id="birthday-balloons" class="scene-birthday__balloons" aria-hidden="true"></div>
+      <div class="scene-birthday__content">
+        <h1 class="scene-birthday__title">Selamat Ulang Tahun</h1>
+        <p id="birthday-name" class="scene-birthday__name"></p>
+        <button type="button" id="gift-button" class="scene-birthday__button">
+          Buka Hadiah
+        </button>
+      </div>
+    </section>
+
+    <section id="scene-gift" class="scene scene-gift">
+      <div
+        id="gift-box"
+        class="gift-box"
+        role="button"
+        tabindex="0"
+        aria-label="Ketuk untuk membuka hadiah"
+      >
+        <span class="gift-box__glow" aria-hidden="true"></span>
+        <div class="gift-box__lid">
+          <span class="gift-box__bow" aria-hidden="true"></span>
+        </div>
+        <div class="gift-box__body"></div>
+        <div class="gift-box__ribbon-v"></div>
+      </div>
+      <p id="gift-hint" class="gift-hint">Ketuk kotaknya</p>
+      <p id="gift-text" class="gift-text" aria-live="polite"></p>
+    </section>
+
+    <section id="scene-memory" class="scene scene-memory">
+      <div class="memory-track" id="memory-track"></div>
+      <div class="memory-dots" id="memory-dots" aria-hidden="true"></div>
+    </section>
+
+    <section id="scene-fun-memories" class="scene scene-fun-memories">
+      <h2 class="fun-memories__title">Achievement Unlocked</h2>
+      <div class="achievement-list" id="achievement-list"></div>
+      <button type="button" id="fun-memories-continue" class="cta-button cta-button--fade">
+        Lanjut
+      </button>
+    </section>
+
+    <section id="scene-stars" class="scene scene-stars">
+      <p id="stars-counter" class="stars-counter"></p>
+      <div class="stars-sky" id="stars-sky"></div>
+      <div class="scene-stars__continue-wrap">
+        <button type="button" id="stars-continue" class="cta-button cta-button--fade">
+          Lanjut
+        </button>
+      </div>
+    </section>
+
+    <section id="scene-quiz" class="scene scene-quiz">
+      <p id="quiz-progress" class="quiz-progress"></p>
+      <div class="quiz-card" id="quiz-card"></div>
+    </section>
+
+    <section id="scene-video" class="scene scene-video">
+      <div class="video-intro" id="video-intro">
+        <p id="video-intro-text" class="video-intro-text" aria-live="polite"></p>
+        <button type="button" id="video-play-button" class="cta-button cta-button--fade">
+          Putar Video
+        </button>
+        <button type="button" id="video-skip-button" class="cta-button cta-button--fade" hidden>
+          Lewati
+        </button>
+      </div>
+      <div class="video-player-wrap" id="video-player-wrap">
+        <video id="video-player" class="video-player" src="assets/videos/message.mp4" playsinline></video>
+      </div>
+    </section>
+
+    <section id="scene-call" class="scene scene-call">
+      <div class="scene-call__avatar-wrap">
+        <span class="scene-call__ring scene-call__ring--1"></span>
+        <span class="scene-call__ring scene-call__ring--2"></span>
+        <img class="scene-call__avatar" id="call-avatar" src="assets/images/sender-avatar.jpg" alt="" />
+      </div>
+      <p class="scene-call__name" id="call-name"></p>
+      <p class="scene-call__status">Panggilan masuk...</p>
+      <div class="scene-call__actions">
+        <button
+          type="button"
+          id="call-decline"
+          class="scene-call__button scene-call__button--decline"
+          aria-label="Tolak panggilan"
+        >
+          ✕
+        </button>
+        <button
+          type="button"
+          id="call-accept"
+          class="scene-call__button scene-call__button--accept"
+          aria-label="Terima panggilan"
+        >
+          📞
+        </button>
+      </div>
+    </section>
+
+    <section id="scene-talking-photo" class="scene scene-talking-photo">
+      <div class="talking-photo__frame" id="talking-photo-frame">
+        <img
+          id="talking-photo-closed"
+          class="talking-photo__layer talking-photo__layer--closed"
+          src="assets/images/sender-avatar-mingkem.jpg"
+          alt=""
+        />
+        <img
+          id="talking-photo-open"
+          class="talking-photo__layer talking-photo__layer--open"
+          src="assets/images/sender-avatar-mangap.jpg"
+          alt=""
+          aria-hidden="true"
+        />
+        <span class="talking-photo__eyelid talking-photo__eyelid--left" id="talking-photo-eyelid-left"></span>
+        <span class="talking-photo__eyelid talking-photo__eyelid--right" id="talking-photo-eyelid-right"></span>
+      </div>
+      <p class="talking-photo__subtitle" id="talking-photo-subtitle" aria-live="polite"></p>
+      <button type="button" id="talking-photo-start-button" class="cta-button cta-button--fade">
+        Dengarkan
+      </button>
+      <audio id="talking-photo-audio" src="assets/audio/message.mp3" preload="auto"></audio>
+    </section>
+
+    <section id="scene-letter" class="scene scene-letter">
+      <div class="letter__sheet">
+        <p class="letter__salutation" id="letter-salutation"></p>
+        <div class="letter__body" id="letter-body"></div>
+        <p class="letter__signature" id="letter-signature"></p>
+        <button type="button" id="letter-continue-button" class="cta-button cta-button--fade">Lanjut</button>
+      </div>
+    </section>
+
+    <section id="scene-final-gift" class="scene scene-final-gift">
+      <div id="final-gift-balloons" class="final-gift__balloons" aria-hidden="true"></div>
+      <p class="final-gift__thanks" id="final-gift-thanks"></p>
+      <div class="final-gift__celebration" id="final-gift-celebration">
+        <h2 class="final-gift__title">Selamat Ulang Tahun</h2>
+        <p class="final-gift__name" id="final-gift-name"></p>
+      </div>
+      <button type="button" id="final-gift-continue-button" class="cta-button cta-button--fade">Lanjut</button>
+    </section>
+
+    <section id="scene-ending" class="scene scene-ending">
+      <p class="ending__label">Sudah berteman selama</p>
+      <div class="ending__stats">
+        <div class="ending__stat">
+          <span class="ending__stat-value" id="ending-days">0</span>
+          <span class="ending__stat-unit">hari</span>
+        </div>
+        <div class="ending__stat">
+          <span class="ending__stat-value" id="ending-hours">0</span>
+          <span class="ending__stat-unit">jam</span>
+        </div>
+        <div class="ending__stat">
+          <span class="ending__stat-value" id="ending-minutes">0</span>
+          <span class="ending__stat-unit">menit</span>
+        </div>
+      </div>
+      <p class="ending__message" id="ending-message" aria-live="polite"></p>
+      <button type="button" id="ending-continue-button" class="cta-button cta-button--fade">Lanjut</button>
+    </section>
+
+    <section id="scene-photobooth" class="scene scene-photobooth">
+      <div class="photobooth__panel photobooth__panel--intro" id="photobooth-intro">
+        <h2 class="photobooth__intro-heading" id="photobooth-intro-heading"></h2>
+        <p class="photobooth__intro-text" id="photobooth-intro-text"></p>
+        <button type="button" id="photobooth-start-button" class="cta-button cta-button--fade">
+          Mulai Photo Booth
+        </button>
+      </div>
+
+      <div class="photobooth__panel" id="photobooth-layout-choose">
+        <p class="photobooth__layout-heading">Pilih Layout</p>
+        <div class="photobooth__layout-cards" id="photobooth-layout-cards"></div>
+      </div>
+
+      <div class="photobooth__panel" id="photobooth-camera">
+        <p class="photobooth__progress" id="photobooth-progress"></p>
+        <div class="photobooth__frame-wrap" id="photobooth-frame-wrap">
+          <video id="photobooth-video" class="photobooth__video" autoplay playsinline muted></video>
+          <img id="photobooth-frame-image" class="photobooth__frame-image" src="" alt="" />
+          <div class="photobooth__flash" id="photobooth-flash"></div>
+          <p class="photobooth__countdown" id="photobooth-countdown"></p>
+        </div>
+        <p class="photobooth__pose-prompt" id="photobooth-pose-prompt"></p>
+        <button type="button" id="photobooth-capture-button" class="cta-button">Ambil Foto</button>
+      </div>
+
+      <div class="photobooth__panel" id="photobooth-error">
+        <p class="photobooth__error-text" id="photobooth-error-text"></p>
+        <button type="button" id="photobooth-retry-button" class="cta-button">Coba Lagi</button>
+      </div>
+
+      <div class="photobooth__panel" id="photobooth-shot-preview">
+        <p class="photobooth__progress" id="photobooth-shot-progress"></p>
+        <img id="photobooth-shot-preview-image" class="photobooth__preview-image" alt="Pratinjau foto barusan" />
+        <div class="photobooth__preview-actions">
+          <button type="button" id="photobooth-shot-retake-button" class="cta-button cta-button--ghost">
+            🔄 Retake
+          </button>
+          <button type="button" id="photobooth-shot-continue-button" class="cta-button">➡ Lanjut</button>
+        </div>
+      </div>
+
+      <div class="photobooth__panel" id="photobooth-generating">
+        <p class="photobooth__generating-text" id="photobooth-generating-text"></p>
+      </div>
+
+      <div class="photobooth__panel" id="photobooth-preview">
+        <img id="photobooth-preview-image" class="photobooth__preview-image" alt="Hasil foto photo booth" />
+        <div class="photobooth__preview-actions">
+          <button type="button" id="photobooth-retake-button" class="cta-button cta-button--ghost">
+            🔄 Ambil Ulang Semua
+          </button>
+          <button type="button" id="photobooth-download-button" class="cta-button">❤️ Unduh Foto</button>
+        </div>
+      </div>
+
+      <div class="photobooth__panel" id="photobooth-share">
+        <p class="photobooth__share-text" id="photobooth-share-text"></p>
+        <div class="photobooth__share-actions">
+          <button type="button" id="photobooth-whatsapp-button" class="cta-button">
+            💌 Kirim ke Pembuat Kado
+          </button>
+          <button type="button" id="photobooth-skip-share-button" class="cta-button cta-button--ghost">
+            🌸 Tidak Sekarang
+          </button>
+        </div>
+      </div>
+
+      <div class="photobooth__panel" id="photobooth-continue">
+        <button type="button" id="photobooth-continue-button" class="cta-button cta-button--fade">
+          ✨ Lanjutkan
+        </button>
+      </div>
+
+      <canvas id="photobooth-canvas" hidden></canvas>
+    </section>
+
+    <section id="scene-scrapbook" class="scene scene-scrapbook">
+      <div class="scrapbook__page" id="scrapbook-page">
+        <img
+          class="scrapbook__old-photo scrapbook__old-photo--1"
+          src="assets/images/memories/memory-1.jpg"
+          alt=""
+          aria-hidden="true"
+        />
+        <img
+          class="scrapbook__old-photo scrapbook__old-photo--2"
+          src="assets/images/memories/memory-2.jpg"
+          alt=""
+          aria-hidden="true"
+        />
+        <img
+          class="scrapbook__old-photo scrapbook__old-photo--3"
+          src="assets/images/memories/memory-3.jpg"
+          alt=""
+          aria-hidden="true"
+        />
+
+        <div class="scrapbook__new-photo-wrap" id="scrapbook-new-photo-wrap">
+          <img id="scrapbook-new-photo" class="scrapbook__new-photo" alt="Foto kenangan baru dari Photo Booth" />
+          <span class="scrapbook__tape scrapbook__tape--left" aria-hidden="true"></span>
+          <span class="scrapbook__tape scrapbook__tape--right" aria-hidden="true"></span>
+        </div>
+
+        <div class="scrapbook__stickers" aria-hidden="true">
+          <span class="scrapbook__sticker scrapbook__sticker--1">🌸</span>
+          <span class="scrapbook__sticker scrapbook__sticker--2">✨</span>
+          <span class="scrapbook__sticker scrapbook__sticker--3">🎀</span>
+          <span class="scrapbook__sticker scrapbook__sticker--4">❤️</span>
+        </div>
+
+        <p class="scrapbook__date" id="scrapbook-date"></p>
+        <p class="scrapbook__label" id="scrapbook-label">Kenangan Baru</p>
+        <p class="scrapbook__caption" id="scrapbook-caption"></p>
+      </div>
+
+      <div class="scrapbook__ending" id="scrapbook-ending">
+        <p class="scrapbook__ending-text" id="scrapbook-ending-text"></p>
+        <div class="scrapbook__credits" id="scrapbook-credits">
+          <p class="scrapbook__credits-line">Made with ❤️</p>
+          <p class="scrapbook__credits-line">by Azhar Firjatullah</p>
+          <p class="scrapbook__credits-line">for Rizka</p>
+          <p class="scrapbook__credits-meta">v1.0 · 5 Agustus 2026</p>
+        </div>
+        <button type="button" id="scrapbook-restart-button" class="scrapbook__restart-link">
+          Lihat Lagi Dari Awal
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <div class="memory-card-overlay" id="memory-card-overlay">
+    <div class="memory-card" id="memory-card" role="dialog" aria-modal="true">
+      <button type="button" id="memory-card-close" class="memory-card__close" aria-label="Tutup">
+        ✕
+      </button>
+      <div class="memory-card__body" id="memory-card-body"></div>
+    </div>
+  </div>
+
+  <div class="chat-nag" id="chat-nag">
+    <p class="chat-nag__sender" id="chat-nag-sender"></p>
+    <p class="chat-nag__message">sayang jangan dimatiin donk angkat plis🥺</p>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
