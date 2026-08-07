@@ -2,7 +2,9 @@
   background:
     radial-gradient(circle at 50% 30%, rgba(232, 130, 159, 0.2) 0%, transparent 60%),
     linear-gradient(160deg, var(--color-bg-light) 0%, var(--color-bg-light-soft) 100%);
-  overflow: hidden;
+  /* Lihat catatan sama di scene-birthday.css — hanya clip horizontal. */
+  overflow-x: hidden;
+  overflow-y: auto;
   gap: var(--space-lg);
 }
 

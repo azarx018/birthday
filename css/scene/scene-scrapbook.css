@@ -3,13 +3,29 @@
   background:
     repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.05) 0px, rgba(0, 0, 0, 0.05) 2px, transparent 2px, transparent 6px),
     linear-gradient(160deg, #9c6b45 0%, #7a4b28 50%, #5c3719 100%);
-  overflow: hidden;
+  /* PENTING — ini yang jadi sumber bug "kepotong di tengah": sebelumnya
+     `overflow: hidden` di sini (dulu buat menahan sticker foto lama
+     biar tidak bocor ke samping) MENIMPA `overflow-y: auto` dari .scene
+     dasar (scene.css), padahal .scrapbook__page + sticker-nya sering
+     lebih tinggi dari layar. Sekarang cuma horizontal yang di-clip. */
+  overflow-x: hidden;
+  overflow-y: auto;
+  /* Jarak virtual mata ke "panggung" 3D — dipakai buat animasi menutup
+     .scrapbook__page (rotateY). WAJIB di parent langsung elemen yang
+     di-transform 3D, bukan di elemen itu sendiri. */
+  perspective: 1000px;
 }
 
 .scrapbook__page {
   position: relative;
   z-index: 1;
   width: min(80vw, 320px);
+  /* Jarak minimum dari atas — supaya begitu kontennya lebih tinggi dari
+     layar (dan .scene jatuh ke "safe center" = start-alignment, lihat
+     scene.css), halamannya tidak mepet banget ke tepi atas, tetap
+     terasa "diposisikan", bukan kejepit. */
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-lg);
   padding: var(--space-xl) var(--space-lg) var(--space-lg);
   display: flex;
   flex-direction: column;
@@ -18,15 +34,21 @@
   background-color: #fffaf3;
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-lg);
-  transform-origin: top center;
+  /* Engsel di kiri — seperti sampul buku yang menutup dari kanan ke kiri. */
+  transform-origin: left center;
+  backface-visibility: hidden;
   transition:
     transform var(--duration-slower) var(--ease-in-out-soft),
     opacity var(--duration-slower) var(--ease-in-out-soft);
 }
 
+/* Menutup seperti buku sungguhan: halaman berputar di engsel kiri,
+   menjauh dari pandangan (bukan menyusut/tersedot ke atas seperti
+   sebelumnya). Diberi jeda opacity supaya tidak terlihat "menembus"
+   flat waktu sudut putarnya mendekati tegak lurus layar. */
 .scrapbook__page.is-closing {
-  transform: scaleY(0.04);
-  opacity: 0.3;
+  transform: rotateY(-100deg);
+  opacity: 0;
 }
 
 /* ---------- "Halaman-halaman lama" — reuse foto Scene 4, mengintip di

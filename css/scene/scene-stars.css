@@ -1,6 +1,7 @@
 .scene-stars {
   background: linear-gradient(180deg, #150a12 0%, var(--color-bg-dark) 55%, var(--color-bg-dark-soft) 100%);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .stars-counter {

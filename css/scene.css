@@ -10,13 +10,26 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* "safe center": tetap center kalau muat, tapi begitu overflow,
+     otomatis jatuh ke start-alignment supaya bagian atas tidak pernah
+     jadi tidak terjangkau scroll (bug flexbox+scroll yang cukup dikenal
+     kalau pakai `center` polos). */
+  justify-content: safe center;
   padding: var(--space-lg);
   text-align: center;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   z-index: var(--z-scene);
+  /* Scroll internal WAJIB ada di sini, bukan diserahkan ke body.
+     Tanpa ini, scene yang kontennya lebih tinggi dari layar (foto +
+     teks + beberapa tombol, kartu scrapbook, dst.) akan overflow tanpa
+     batas yang jelas — bagian atas/bawah kepotong, dan karena SEMUA
+     scene ditumpuk position:absolute di tempat yang sama, overflow yang
+     tidak tertahan bisa membuat konten scene lain ikut "kelihatan" saat
+     scroll (lihat POLISH_LOG.md untuk detail investigasi bug ini). */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   transition:
     opacity var(--duration-slow) var(--ease-in-out-soft),
     visibility 0s linear var(--duration-slow);

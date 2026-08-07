@@ -363,5 +363,99 @@ konfirmasi ketiga bug di atas sudah benar-benar beres di device asli.
 
 ---
 
+## 🐛 Bug Fix Round 2 — Root cause SEBENARNYA dari "kepotong" & "gambar jadi 2"
+
+User kasih screenshot nyata setelah testing fix round 1 — ternyata bug
+masih ada, dan user sendiri curiga soal "layout/posisi". Curiganya benar.
+Investigasi ulang nemu root cause yang jauh lebih mendasar dari
+race-condition di round 1 (race-condition itu tetap perbaikan valid,
+tapi bukan penyebab utama).
+
+**Root cause (dikonfirmasi lewat 3 screenshot user):**
+
+`css/scene.css` — `.scene` (base class SEMUA scene) di-set
+`position: absolute; inset: 0;` TANPA `overflow-y` sama sekali (default
+`visible`), sementara `css/global.css` men-set `body { overflow: hidden; }`.
+Selama isi sebuah scene MUAT dalam satu layar (100dvh), tidak masalah.
+Begitu isi scene LEBIH TINGGI dari layar — panel Share di Photobooth
+(teks + 2 tombol) atau `.scrapbook__page` (foto + teks + dekorasi) — scene
+tidak punya scroll internal-nya sendiri, jadi kontennya overflow tanpa
+batas yang jelas. Karena `body{overflow:hidden}` seharusnya mematikan
+scroll dokumen tapi TIDAK ADA scene individual yang scrollable, hasilnya
+scroll behavior jadi tidak konsisten/bocor — persis cocok sama SEMUA
+gejala yang dilaporkan user: bagian atas kepotong (share panel), bagian
+tengah kepotong (scrapbook), dan foto yang kelihatan "dobel" saat scroll
+(hampir pasti ini konten scene yang overflow tanpa batas jelas, bukan
+benar-benar 2 gambar berbeda).
+
+**Kenapa fix round 1 (`overflow-y:auto` seharusnya) tidak langsung kelihatan efeknya:**
+5 scene (`scene-birthday`, `scene-final-gift`, `scene-scrapbook`,
+`scene-video`, `scene-stars`) masing-masing punya `overflow: hidden`
+SENDIRI di level scene (awalnya buat menahan dekorasi — balon/confetti/
+partikel bintang — biar tidak bocor ke samping layar). Karena file
+scene-*.css di-load SETELAH `scene.css`, aturan ini MENIMPA BALIK
+`overflow-y: auto` yang mau ditambahkan ke `.scene`. **`scene-scrapbook`
+ada di daftar ini — persis scene yang dilaporkan kepotong di tengah.**
+
+**Fix:**
+
+1. `css/scene.css` — `.scene` sekarang `overflow-y: auto;` +
+   `-webkit-overflow-scrolling: touch;` (scroll internal per-scene,
+   bukan mengandalkan body).
+2. `css/scene.css` — `justify-content: center` → **`justify-content: safe center`**.
+   Ini detail teknis penting: flexbox yang di-scroll dengan `justify-content:center`
+   polos punya bug lama di banyak browser — begitu konten overflow,
+   bagian ATAS yang "ke-center" jadi TIDAK BISA dijangkau scroll sama
+   sekali (persis "atasnya kecut" di panel Share). `safe center` adalah
+   keyword CSS modern yang dirancang khusus untuk kasus ini: tetap center
+   kalau muat, otomatis jatuh ke start-alignment (bisa di-scroll penuh)
+   begitu overflow.
+3. Lima scene (`scene-birthday.css`, `scene-final-gift.css`,
+   `scene-scrapbook.css`, `scene-video.css`, `scene-stars.css`) —
+   `overflow: hidden` diganti jadi `overflow-x: hidden; overflow-y: auto;`
+   — tetap menahan dekorasi biar tidak bocor SAMPING (niat awalnya utuh),
+   tapi vertical tetap bisa scroll kalau konten lebih tinggi dari layar.
+
+**Status fix round 1 (race condition `shotContinueButton`, `await composeFinalPreview()`):**
+tetap dipertahankan — itu tetap bug nyata yang valid diperbaiki, cuma
+bukan penyebab UTAMA yang dilaporkan user. Kombinasi kedua fix ini
+seharusnya membuat behaviour jauh lebih stabil.
+
+**Mohon ditest ulang di device asli:** khususnya alur penuh Photobooth →
+Scrapbook, dan perhatikan apakah share panel & scrapbook sudah full
+kelihatan (bisa di-scroll natural ke atas/bawah tanpa kepotong).
+
+---
+
+## Polish 6 — Scrapbook: posisi & animasi menutup
+
+**Konteks:** setelah fix scroll di round sebelumnya, user lapor
+`.scrapbook__page` terasa tidak di tengah lagi, dan animasi "menutup"
+(`scaleY` menyusut ke atas) terasa seperti "tersedot/menggulung ke atas".
+
+**File yang berubah:** `css/scene/scene-scrapbook.css`
+
+- **Posisi:** `.scrapbook__page` dapat `margin-top`/`margin-bottom: var(--space-lg)`.
+  Penjelasan jujur ke user: begitu konten halaman lebih tinggi dari layar,
+  `.scene` (base) pakai `justify-content: safe center` (lihat fix round 2)
+  yang SENGAJA jatuh ke start-alignment (dari atas) begitu overflow — ini
+  trade-off yang perlu supaya konten tetap bisa di-scroll penuh sampai ke
+  atas (masalah sebelumnya: kelihatan "center" tapi sebenarnya kepotong,
+  tidak bisa discroll sama sekali). Margin ini bukan bikin "benar-benar
+  selalu di tengah", tapi memastikan minimal selalu ada jarak dari tepi
+  atas, jadi tetap terasa "diposisikan" bukan "kejepit".
+- **Animasi menutup — diganti total, sesuai pilihan user ("flip 3D dari samping"):**
+  - `.scene-scrapbook` dapat `perspective: 1000px;` (wajib di parent
+    langsung elemen yang di-transform 3D, bukan di elemen itu sendiri).
+  - `.scrapbook__page` — `transform-origin: top center` → **`left center`**
+    (engsel di kiri, seperti sampul buku), tambah `backface-visibility: hidden;`.
+  - `.scrapbook__page.is-closing` — `transform: scaleY(0.04); opacity:0.3;`
+    → **`transform: rotateY(-100deg); opacity: 0;`** — halaman berputar
+    menutup di engsel kiri sampai menjauh dari pandangan, dibarengi fade
+    (supaya tidak terlihat "menembus" flat waktu sudutnya mendekati
+    tegak lurus terhadap layar).
+
+---
+
 <!-- Sprint berikutnya ditambah di bawah ini, format sama: judul, file baru,
      file berubah, catatan penting untuk lanjutan. -->

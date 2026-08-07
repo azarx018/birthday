@@ -1,6 +1,7 @@
 .scene-video {
   background-color: #000;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .video-intro {

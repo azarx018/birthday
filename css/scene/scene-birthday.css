@@ -4,7 +4,11 @@
   background:
     radial-gradient(circle at 50% 35%, rgba(232, 130, 159, 0.22) 0%, transparent 60%),
     linear-gradient(160deg, var(--color-bg-light) 0%, var(--color-bg-light-soft) 100%);
-  overflow: hidden;
+  /* HANYA clip horizontal (balon/confetti dekoratif tidak boleh bocor ke
+     samping) — vertical TETAP bisa scroll, warisan dari .scene di
+     scene.css, supaya konten yang lebih tinggi dari layar tidak kepotong. */
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .scene-birthday__balloons {
