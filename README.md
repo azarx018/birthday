@@ -17,3 +17,7 @@ npx serve .
 ## Struktur
 
 Lihat bagian "Project Structure" di dokumen project untuk detail lengkap.
+
+---
+
+_Test edit via Claude + GitHub connector (31 Okt 2026). Aman dihapus._
